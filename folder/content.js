@@ -22,36 +22,99 @@ function showSaveButton(selection, event) {
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
 
-  highlightButton = document.createElement('button');
-  highlightButton.textContent = 'Save highlight';
+  highlightButton = document.createElement('div');
   highlightButton.style.position = 'absolute';
   highlightButton.style.top = `${window.scrollY + rect.top - 40}px`;
   highlightButton.style.left = `${window.scrollX + rect.left}px`;
   highlightButton.style.zIndex = '999999';
-  highlightButton.style.padding = '6px 10px';
-  highlightButton.style.background = '#ff6719';
-  highlightButton.style.color = '#fff';
-  highlightButton.style.border = 'none';
-  highlightButton.style.borderRadius = '6px';
-  highlightButton.style.fontSize = '13px';
-  highlightButton.style.cursor = 'pointer';
-  highlightButton.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+  highlightButton.style.display = 'flex';
+  highlightButton.style.gap = '4px';
 
-  highlightButton.addEventListener('click', (e) => {
-    console.log('BUTTON WAS CLICKED');
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Save highlight';
+  styleButton(saveBtn);
+
+  saveBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-
-    const text = selection.toString().trim();
-    const range = selection.getRangeAt(0).cloneRange(); // clone before it gets cleared
-
-    highlightRange(range);
-
-    console.log('Saved highlight:', text);
-    highlightButton.remove();
-    highlightButton = null;
+    showNoteInput(selection, range);
   });
 
+  highlightButton.appendChild(saveBtn);
   document.body.appendChild(highlightButton);
+}
+
+function showNoteInput(selection, range) {
+  const text = selection.toString().trim();
+  const savedRange = range.cloneRange();
+
+  // Clear the button container and replace with an input UI
+  highlightButton.innerHTML = '';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Why did you highlight this? (optional)';
+  input.style.padding = '6px 8px';
+  input.style.borderRadius = '6px';
+  input.style.border = '1px solid #ccc';
+  input.style.fontSize = '13px';
+  input.style.width = '240px';
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.textContent = 'Save';
+  styleButton(confirmBtn);
+
+  confirmBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    finalizeSave(text, savedRange, input.value.trim());
+  });
+
+  // Allow pressing Enter to save too
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      finalizeSave(text, savedRange, input.value.trim());
+    }
+  });
+
+  highlightButton.appendChild(input);
+  highlightButton.appendChild(confirmBtn);
+  input.focus();
+}
+
+function finalizeSave(text, range, note) {
+  highlightRange(range);
+
+  const highlightData = {
+    text,
+    note,
+    url: window.location.href,
+    title: document.title,
+    timestamp: new Date().toISOString(),
+  };
+
+  chrome.storage.local.get({ highlights: [] }, (result) => {
+    const highlights = result.highlights;
+    highlights.push(highlightData);
+    chrome.storage.local.set({ highlights }, () => {
+      console.log('Saved to storage:', highlightData);
+    });
+  });
+
+  if (highlightButton) {
+    highlightButton.remove();
+    highlightButton = null;
+  }
+}
+
+function styleButton(btn) {
+  btn.style.padding = '6px 10px';
+  btn.style.background = '#ff6719';
+  btn.style.color = '#fff';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '6px';
+  btn.style.fontSize = '13px';
+  btn.style.cursor = 'pointer';
+  btn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
 }
 
 function highlightRange(range) {
@@ -61,10 +124,8 @@ function highlightRange(range) {
   mark.className = 'substack-highlighter-mark';
 
   try {
-    // Simple case: selection doesn't cross element boundaries
     range.surroundContents(mark);
   } catch (err) {
-    // Selection spans multiple nodes — fallback: extract and re-wrap
     const contents = range.extractContents();
     mark.appendChild(contents);
     range.insertNode(mark);
