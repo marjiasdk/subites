@@ -1,6 +1,6 @@
 # Substack Highlighter
 
-A Chrome extension for highlighting text on Substack articles and saving it with your own notes on *why* it mattered — not just what you read, but why you cared.
+A Chrome extension for highlighting text on Substack articles and saving it with your own notes.
 
 ## Features
 
@@ -12,7 +12,7 @@ A Chrome extension for highlighting text on Substack articles and saving it with
 
 ## Why
 
-Reading a lot of Substack and losing track of what actually stuck with me — and why — was the problem this solves. Native highlighting tools capture *what*; this captures *why*.
+Reading a lot of Substack and losing track of what stuck with me — and why — was the problem this solves. 
 
 ## Installation (local/unpacked)
 
