@@ -40,10 +40,33 @@ function showSaveButton(selection, event) {
   highlightButton.addEventListener('click', (e) => {
     console.log('BUTTON WAS CLICKED');
     e.stopPropagation();
-    console.log('Save clicked for:', selection.toString().trim());
+
+    const text = selection.toString().trim();
+    const range = selection.getRangeAt(0).cloneRange(); // clone before it gets cleared
+
+    highlightRange(range);
+
+    console.log('Saved highlight:', text);
     highlightButton.remove();
     highlightButton = null;
   });
 
   document.body.appendChild(highlightButton);
+}
+
+function highlightRange(range) {
+  const mark = document.createElement('mark');
+  mark.style.backgroundColor = '#ffe08a';
+  mark.style.padding = '0 1px';
+  mark.className = 'substack-highlighter-mark';
+
+  try {
+    // Simple case: selection doesn't cross element boundaries
+    range.surroundContents(mark);
+  } catch (err) {
+    // Selection spans multiple nodes — fallback: extract and re-wrap
+    const contents = range.extractContents();
+    mark.appendChild(contents);
+    range.insertNode(mark);
+  }
 }
