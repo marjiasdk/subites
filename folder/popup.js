@@ -62,3 +62,25 @@ function escapeHtml(str) {
 }
 
 renderHighlights();
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  chrome.storage.local.get({ highlights: [] }, (result) => {
+    const highlights = result.highlights;
+
+    if (highlights.length === 0) {
+      alert('No highlights to export yet.');
+      return;
+    }
+
+    const json = JSON.stringify(highlights, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `substack-highlights-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  });
+});
