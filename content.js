@@ -22,13 +22,28 @@ function showSaveButton(selection, event) {
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
 
+  // Find the nearest block-level container (paragraph, etc.) to get the article's right edge
+  let containerEl = range.startContainer;
+  if (containerEl.nodeType === Node.TEXT_NODE) {
+    containerEl = containerEl.parentElement;
+  }
+  const articleBlock = containerEl.closest('p, div, article') || containerEl;
+  const articleRect = articleBlock.getBoundingClientRect();
+
   highlightButton = document.createElement('div');
   highlightButton.style.position = 'absolute';
-  highlightButton.style.top = `${window.scrollY + rect.top - 40}px`;
-  highlightButton.style.left = `${window.scrollX + rect.left}px`;
+
+  // Vertical position tracks the selection
+  highlightButton.style.top = `${window.scrollY + rect.top}px`;
+
+  // Horizontal position is FIXED to the right edge of the article column
+  highlightButton.style.left = `${window.scrollX + articleRect.right + 16}px`;
+
   highlightButton.style.zIndex = '999999';
   highlightButton.style.display = 'flex';
   highlightButton.style.gap = '4px';
+  highlightButton.style.transition = 'opacity 0.15s ease';
+  highlightButton.style.opacity = '0';
 
   const saveBtn = document.createElement('button');
   saveBtn.textContent = 'Save highlight';
@@ -41,6 +56,10 @@ function showSaveButton(selection, event) {
 
   highlightButton.appendChild(saveBtn);
   document.body.appendChild(highlightButton);
+
+  requestAnimationFrame(() => {
+    highlightButton.style.opacity = '1';
+  });
 }
 
 function showNoteInput(selection, range) {
@@ -62,6 +81,7 @@ function showNoteInput(selection, range) {
   const confirmBtn = document.createElement('button');
   confirmBtn.textContent = 'Save';
   styleButton(confirmBtn);
+  confirmBtn.style.marginLeft = '6px';
 
   confirmBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -107,14 +127,16 @@ function finalizeSave(text, range, note) {
 }
 
 function styleButton(btn) {
-  btn.style.padding = '6px 10px';
+  btn.style.padding = '7px 12px';
   btn.style.background = '#ff6719';
   btn.style.color = '#fff';
   btn.style.border = 'none';
-  btn.style.borderRadius = '6px';
+  btn.style.borderRadius = '20px'; // pill-shaped, feels more modern
   btn.style.fontSize = '13px';
+  btn.style.fontWeight = '500';
   btn.style.cursor = 'pointer';
-  btn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+  btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
+  btn.style.whiteSpace = 'nowrap';
 }
 
 function highlightRange(range) {
