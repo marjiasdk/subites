@@ -5,10 +5,16 @@
   "description": "Highlight and save text from Substack articles with your own notes.",
   "permissions": ["storage", "activeTab"],
   "content_scripts": [
-    {
-      "matches": ["*://*.substack.com/*"],
-      "js": ["content.js"]
-    }
+  {
+    "matches": ["*://*.substack.com/*"],
+    "js": [
+      "content/dom-utils.js",
+      "content/ui.js",
+      "content/storage.js",
+      "content/restore.js",
+      "content/main.js"
+    ]
+  }
   ],
   "action": {
     "default_popup": "popup.html"
