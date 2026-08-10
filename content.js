@@ -102,7 +102,9 @@ function showNoteInput(selection, range) {
 }
 
 function finalizeSave(text, range, note) {
+  console.log('[Highlighter] About to call highlightRange with range:', range);
   highlightRange(range);
+  console.log('[Highlighter] highlightRange call completed');
 
   const context = getSurroundingContext(range);
 
@@ -165,6 +167,11 @@ function styleButton(btn) {
 
 function highlightRange(range) {
   const textNodes = getTextNodesInRange(range);
+  console.log(
+    '[Highlighter] Text nodes found to wrap:',
+    textNodes.length,
+    textNodes,
+  );
 
   textNodes.forEach(({ node, start, end }) => {
     const nodeRange = document.createRange();
@@ -178,6 +185,7 @@ function highlightRange(range) {
 
     try {
       nodeRange.surroundContents(mark);
+      console.log('[Highlighter] Successfully wrapped a text node');
     } catch (err) {
       console.warn('[Highlighter] Could not wrap text node:', err);
     }
@@ -186,11 +194,19 @@ function highlightRange(range) {
 
 function getTextNodesInRange(range) {
   const result = [];
-  const walker = document.createTreeWalker(
-    range.commonAncestorContainer,
-    NodeFilter.SHOW_TEXT,
-    null,
-  );
+  const root = range.commonAncestorContainer;
+
+  // If the range is entirely within a single text node, handle it directly
+  if (root.nodeType === Node.TEXT_NODE) {
+    result.push({
+      node: root,
+      start: range.startOffset,
+      end: range.endOffset,
+    });
+    return result;
+  }
+
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
 
   let node;
   while ((node = walker.nextNode())) {
