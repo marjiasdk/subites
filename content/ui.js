@@ -39,24 +39,42 @@ function showSaveButton(selection, event) {
 }
 
 function showNoteInput(selection, range) {
+  ensurePlaceholderStyle();
+
   const text = selection.toString().trim();
   const savedRange = range.cloneRange();
 
   highlightButton.innerHTML = '';
+  highlightButton.style.gap = '0';
+  highlightButton.style.background = '#3a3a3a';
+  highlightButton.style.border = '1px solid rgba(255,255,255,0.22)';
+  highlightButton.style.borderRadius = '9px';
+  highlightButton.style.boxShadow = 'none';
+  highlightButton.style.overflow = 'hidden';
 
   const input = document.createElement('input');
   input.type = 'text';
   input.placeholder = 'Why did you highlight this? (optional)';
-  input.style.padding = '6px 8px';
-  input.style.borderRadius = '6px';
-  input.style.border = '1px solid #ccc';
+  input.className = 'substack-highlighter-input';
+  input.style.border = 'none';
+  input.style.outline = 'none';
+  input.style.background = 'transparent';
+  input.style.color = '#f5f5f5';
+  input.style.padding = '9px 12px';
   input.style.fontSize = '13px';
   input.style.width = '240px';
 
   const confirmBtn = document.createElement('button');
   confirmBtn.textContent = 'Save';
-  styleButton(confirmBtn);
-  confirmBtn.style.marginLeft = '6px';
+  confirmBtn.style.padding = '0 18px';
+  confirmBtn.style.alignSelf = 'stretch';
+  confirmBtn.style.background = '#ff6719';
+  confirmBtn.style.color = '#fff';
+  confirmBtn.style.border = 'none';
+  confirmBtn.style.fontSize = '13px';
+  confirmBtn.style.fontWeight = '600';
+  confirmBtn.style.cursor = 'pointer';
+  confirmBtn.style.whiteSpace = 'nowrap';
 
   confirmBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -76,14 +94,27 @@ function showNoteInput(selection, range) {
 }
 
 function styleButton(btn) {
-  btn.style.padding = '7px 12px';
+  btn.style.padding = '8px 14px';
   btn.style.background = '#ff6719';
   btn.style.color = '#fff';
   btn.style.border = 'none';
-  btn.style.borderRadius = '20px';
+  btn.style.borderRadius = '9px';
   btn.style.fontSize = '13px';
-  btn.style.fontWeight = '500';
+  btn.style.fontWeight = '600';
   btn.style.cursor = 'pointer';
-  btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)';
+  btn.style.boxShadow = 'none';
   btn.style.whiteSpace = 'nowrap';
+}
+
+function ensurePlaceholderStyle() {
+  if (document.getElementById('substack-highlighter-style')) return;
+
+  const style = document.createElement('style');
+  style.id = 'substack-highlighter-style';
+  style.textContent = `
+    .substack-highlighter-input::placeholder {
+      color: rgba(245, 245, 245, 0.5);
+    }
+  `;
+  document.head.appendChild(style);
 }
