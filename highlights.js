@@ -23,7 +23,6 @@ function renderHighlights() {
         const date = new Date(h.timestamp).toLocaleDateString();
 
         card.innerHTML = `
-        <button class="delete-btn" data-index="${actualIndex}">x</button>
         <div class="highlight-text">${escapeHtml(h.text)}</div>
         ${h.note ? `<div class="highlight-note">"${escapeHtml(h.note)}"</div>` : ''}
         <div class="highlight-meta">
@@ -33,23 +32,6 @@ function renderHighlights() {
 
         container.appendChild(card);
       });
-
-    document.querySelectorAll('.delete-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index, 10);
-        deleteHighlight(index);
-      });
-    });
-  });
-}
-
-function deleteHighlight(index) {
-  chrome.storage.local.get({ highlights: [] }, (result) => {
-    const highlights = result.highlights;
-    highlights.splice(index, 1);
-    chrome.storage.local.set({ highlights }, () => {
-      renderHighlights();
-    });
   });
 }
 
@@ -60,7 +42,3 @@ function escapeHtml(str) {
 }
 
 renderHighlights();
-
-document.getElementById('export-btn').addEventListener('click', () => {
-  window.open(chrome.runtime.getURL('highlights.html'), '_blank');
-});
