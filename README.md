@@ -1,10 +1,6 @@
-# Substack Highlighter
+# Subites
 
 A Chrome extension that lets you highlight text on Substack articles, attach a quick note to it, and come back to everything you've saved later.
-
-## Why this exists
-
-I read a lot of Substack articles and wished there was a way to highlight parts and look back on them. This tool highlights text, allows you to add a note, and let's you save them in a local page.
 
 ## What it does
 
