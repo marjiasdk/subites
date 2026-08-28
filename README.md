@@ -77,3 +77,4 @@ Nothing leaves your machine. There's no server, no account, no analytics.
 - Search and filter in the highlights view
 - Markdown export
 - Support for custom Substack domains
+- Publishing it to the Chrome Web Store so it doesn't need to be loaded unpacked every time
