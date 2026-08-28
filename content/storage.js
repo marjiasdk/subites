@@ -1,6 +1,4 @@
 function finalizeSave(text, range, note) {
-  highlightRange(range);
-
   const context = getSurroundingContext(range);
 
   const highlightData = {
@@ -12,6 +10,8 @@ function finalizeSave(text, range, note) {
     title: document.title,
     timestamp: new Date().toISOString(),
   };
+
+  highlightRange(range, highlightData.timestamp);
 
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;

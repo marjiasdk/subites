@@ -9,7 +9,7 @@ function restoreHighlights() {
       const range = findRangeForText(h.text, h.contextBefore, h.contextAfter);
       if (range) {
         try {
-          highlightRange(range);
+          highlightRange(range, h.timestamp);
         } catch (err) {
           console.warn('[Highlighter] highlightRange threw an error:', err);
         }

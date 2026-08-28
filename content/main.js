@@ -17,3 +17,13 @@ document.addEventListener('mouseup', (e) => {
 });
 
 waitForContentThenRestore();
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === 'removeHighlight') {
+    document
+      .querySelectorAll(
+        `.substack-highlighter-mark[data-highlight-id="${message.highlightId}"]`,
+      )
+      .forEach(unwrapMark);
+  }
+});

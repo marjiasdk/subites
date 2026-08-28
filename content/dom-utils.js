@@ -29,7 +29,7 @@ function getTextNodesInRange(range) {
   return result;
 }
 
-function highlightRange(range) {
+function highlightRange(range, highlightId) {
   const textNodes = getTextNodesInRange(range);
 
   textNodes.forEach(({ node, start, end }) => {
@@ -41,6 +41,9 @@ function highlightRange(range) {
     mark.style.backgroundColor = '#ffe08a';
     mark.style.padding = '0 1px';
     mark.className = 'substack-highlighter-mark';
+    if (highlightId) {
+      mark.dataset.highlightId = highlightId;
+    }
 
     try {
       nodeRange.surroundContents(mark);
@@ -48,6 +51,17 @@ function highlightRange(range) {
       console.warn('[Highlighter] Could not wrap text node:', err);
     }
   });
+}
+
+function unwrapMark(mark) {
+  const parent = mark.parentNode;
+  if (!parent) return;
+
+  while (mark.firstChild) {
+    parent.insertBefore(mark.firstChild, mark);
+  }
+  parent.removeChild(mark);
+  parent.normalize();
 }
 
 function getVisibleText() {

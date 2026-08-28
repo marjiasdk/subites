@@ -46,10 +46,21 @@ function renderHighlights() {
 function deleteHighlight(index) {
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;
-    highlights.splice(index, 1);
+    const [removed] = highlights.splice(index, 1);
     chrome.storage.local.set({ highlights }, () => {
       renderHighlights();
     });
+
+    if (removed) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (!tabs[0]) return;
+        chrome.tabs.sendMessage(
+          tabs[0].id,
+          { type: 'removeHighlight', highlightId: removed.timestamp },
+          () => void chrome.runtime.lastError,
+        );
+      });
+    }
   });
 }
 
